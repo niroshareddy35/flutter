@@ -67,6 +67,7 @@ class _LocationState extends State<Location> {
   Widget build(BuildContext context) {
     return GoogleMap(
         initialCameraPosition: _myLocation,
+        myLocationEnabled: true,
         mapType: MapType.normal,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);

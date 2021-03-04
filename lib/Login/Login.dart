@@ -28,9 +28,7 @@ class _LoginState extends State<Login> {
   var resp1 = '';
   postRequest() async {
     var url = "${widget.ip}/authenticate";
-    //HttpClient client = new HttpClient();
-    //client.badCertificateCallback =
-    //    ((X509Certificate cert, String host, int port) => true);
+
     Map data = {
       'username': "${username.text}",
       'password': "${password.text}",
@@ -53,10 +51,15 @@ class _LoginState extends State<Login> {
               if (data["token"] != null)
                 {
                   this.setState(() => {
+                        resp1 = data["fname"],
+                        resp1 = data["lname"],
+                        resp1 = data["userid"],
+                        resp1 = data["mname"],
                         resp1 = data["token"],
                         print("${resp1}"),
                       }),
                   redirectTo(data["token"]),
+                  saveInLocalStorage("fname", data["fname"]),
                   saveInLocalStorage("token", data["token"])
                 }
               else if (data["message"] == null)

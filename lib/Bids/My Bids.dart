@@ -37,6 +37,7 @@ class _MyBidsState extends State<MyBids> {
   var pagesize = 5;
   var pageNumber = 0;
   var totalElements;
+  var showMsg = false;
 
   getRequest() async {
     await http.get(
@@ -57,6 +58,11 @@ class _MyBidsState extends State<MyBids> {
           // print(response.body),
           if (response.statusCode == 200)
             {
+              data["servicerequestoffers"].length == 0
+                  ? setState(() {
+                      showMsg = true;
+                    })
+                  : servicerequestoffers = data["servicerequestoffers"],
               totalElements = data["totalelements"],
               setState(() {
                 servicerequestoffers = data["servicerequestoffers"];
@@ -203,116 +209,126 @@ class _MyBidsState extends State<MyBids> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: ReusableWidgets.getAppBar(context, "show"),
-        drawer: ReusableWidgetsSideBar.sideBar(context),
-        body: Form(
-            key: _formKey,
-            child: ListView(scrollDirection: Axis.vertical, children: <Widget>[
-              Column(children: <Widget>[
-                Container(
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      "My Bids",
-                      style: TextStyle(color: Colors.black, fontSize: 20),
-                    ),
-                  ),
-                ),
-              ]),
-              for (var i = 0; i < servicerequestoffers.length; i++)
-                Column(mainAxisSize: MainAxisSize.min, children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            "Title:${servicerequestoffers[i]["servicerequesttitle"]}"),
-                        Text(
-                            "Description:${servicerequestoffers[i]["servicerequestdescription"]}"),
-                        Text(
-                            "Price:${servicerequestoffers[i]["currency"]}${servicerequestoffers[i]["offerprice"]}"),
-                        Text(
-                            "Bid Type:${servicerequestoffers[i]["offertype"]}"),
-                        Text(
-                            "Bid Status:${servicerequestoffers[i]["servicerequeststatus"]}"),
-                        Text(
-                            "date:${DateFormat("yy-MM-dd").format(DateTime.parse(servicerequestoffers[i]["created_at"]))}"),
-                        Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.edit),
-                                color: Colors.black,
-                                onPressed: servicerequestoffers[i]
-                                            ["servicerequeststatus"] !=
-                                        'BidAccepted'
-                                    ? () {
-                                        _showMyDialog(
-                                            servicerequestoffers[i]
-                                                ["servicerequestofferid"],
-                                            servicerequestoffers[i]
-                                                ["servicerequestid"]);
-                                      }
-                                    : null,
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+      appBar: ReusableWidgets.getAppBar(context, "show"),
+      drawer: ReusableWidgetsSideBar.sideBar(context),
+      body: !showMsg
+          ? Form(
+              key: _formKey,
+              child:
+                  ListView(scrollDirection: Axis.vertical, children: <Widget>[
+                Column(children: <Widget>[
+                  Container(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Text(
+                        "My Bids",
+                        style: TextStyle(color: Colors.black, fontSize: 20),
+                      ),
                     ),
                   ),
                 ]),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: FlatButton(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                                  child: Text('Previous'),
-                                ),
-                                onPressed: () {
-                                  pageNumber > 0
-                                      ? {
-                                          setState(() {
-                                            pageNumber = pageNumber - 1;
-                                          }),
-                                          getRequest()
+                for (var i = 0; i < servicerequestoffers.length; i++)
+                  Column(mainAxisSize: MainAxisSize.min, children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              "Title:${servicerequestoffers[i]["servicerequesttitle"]}"),
+                          Text(
+                              "Description:${servicerequestoffers[i]["servicerequestdescription"]}"),
+                          Text(
+                              "Price:${servicerequestoffers[i]["currency"]}${servicerequestoffers[i]["offerprice"]}"),
+                          Text(
+                              "Bid Type:${servicerequestoffers[i]["offertype"]}"),
+                          Text(
+                              "Bid Status:${servicerequestoffers[i]["servicerequeststatus"]}"),
+                          Text(
+                              "date:${DateFormat("yy-MM-dd").format(DateTime.parse(servicerequestoffers[i]["created_at"]))}"),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  color: Colors.black,
+                                  onPressed: servicerequestoffers[i]
+                                              ["servicerequeststatus"] !=
+                                          'BidAccepted'
+                                      ? () {
+                                          _showMyDialog(
+                                              servicerequestoffers[i]
+                                                  ["servicerequestofferid"],
+                                              servicerequestoffers[i]
+                                                  ["servicerequestid"]);
                                         }
-                                      : null;
-                                })),
-                      ),
-                      Container(
-                          width: MediaQuery.of(context).size.width * 0.52,
-                          child: FlatButton(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
-                              child: Text('Next'),
+                                      : null,
+                                ),
+                              ],
                             ),
-                            onPressed: () {
-                              (pageNumber + 1) * pagesize >= totalElements
-                                  ? null
-                                  : {
-                                      setState(() {
-                                        pageNumber = pageNumber + 1;
-                                      }),
-                                      getRequest()
-                                    };
-                            },
-                          ))
-                    ]),
+                          )
+                        ],
+                      ),
+                    ),
+                  ]),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: FlatButton(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                    child: Text('Previous'),
+                                  ),
+                                  onPressed: () {
+                                    pageNumber > 0
+                                        ? {
+                                            setState(() {
+                                              pageNumber = pageNumber - 1;
+                                            }),
+                                            getRequest()
+                                          }
+                                        : null;
+                                  })),
+                        ),
+                        Container(
+                            width: MediaQuery.of(context).size.width * 0.52,
+                            child: FlatButton(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                child: Text('Next'),
+                              ),
+                              onPressed: () {
+                                (pageNumber + 1) * pagesize >= totalElements
+                                    ? null
+                                    : {
+                                        setState(() {
+                                          pageNumber = pageNumber + 1;
+                                        }),
+                                        getRequest()
+                                      };
+                              },
+                            ))
+                      ]),
+                ),
+              ]))
+          : Container(
+              alignment: Alignment.center,
+              child: Text(
+                "You don't have any bids",
+                style: TextStyle(color: Colors.black, fontSize: 20),
               ),
-            ])));
+            ),
+    );
   }
 }
